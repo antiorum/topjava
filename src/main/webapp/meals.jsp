@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <html>
 <head>
     <title>Meals</title>
@@ -10,14 +10,22 @@
 <hr>
 <h2>Meals</h2>
 <table>
-    <tr><th>Время</th><th>Описание</th><th>Калории</th></tr>
+    <tr>
+        <th>Дата и время</th>
+        <th>Описание</th>
+        <th>Калории</th>
+    </tr>
     <c:forEach var="meal" items="${meals}">
         <c:if test="${meal.excess}">
-            <tr style="color: red"><td>"${meal.date} ${meal.time}"</td><td>"${meal.description}"</td><td>"${meal.calories}"</td></tr>
+            <tr style="color: red">
         </c:if>
         <c:if test="${!meal.excess}">
-            <tr style="color: green"><td>"${meal.date} ${meal.time}"</td><td>"${meal.description}"</td><td>"${meal.calories}"</td></tr>
+            <tr style="color: green">
         </c:if>
+        <td>${meal.dateTime.format( DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}</td>
+        <td>${meal.description}</td>
+        <td>${meal.calories}</td>
+        </tr>
     </c:forEach>
 </table>
 </body>
