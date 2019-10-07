@@ -9,11 +9,12 @@
 <html>
 <head>
     <title>Meal</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h2>Редактирование выбранной записи</h2>
+<h2>Редактирование выбранной записи/добавление новой еды</h2>
 <form action="meals" method="post" accept-charset="UTF-8">
-    <input readonly type="number" name="id" value="${meal.id}">
+    <input readonly class="idValue" type="number" name="id" value="${meal.id>0? meal.id:0}">
     <input type="datetime-local" name="dateTime" value="${meal.dateTime}">
     <input type="text" name="description" value="${meal.description}">
     <input type="number" name="calories" value="${meal.calories}">
