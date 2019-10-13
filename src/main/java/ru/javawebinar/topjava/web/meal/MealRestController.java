@@ -37,7 +37,7 @@ public class MealRestController {
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealTo> getWithTimeFilter (LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime){
+    public List<MealTo> getMealsWithTimeFilter(LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime){
         return MealsUtil.getFilteredTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay(), fromTime, toTime, fromDate, toDate);
     }
 
@@ -88,7 +88,7 @@ public class MealRestController {
                 LocalDate dateTo = request.getParameter("dateTo").isEmpty() ? LocalDate.MAX : LocalDate.parse(request.getParameter("dateTo"));
                 LocalTime timeFrom = request.getParameter("timeFrom").isEmpty() ? LocalTime.MIN : LocalTime.parse(request.getParameter("timeFrom"));
                 LocalTime timeTo = request.getParameter("timeTo").isEmpty() ? LocalTime.MAX : LocalTime.parse(request.getParameter("timeTo"));
-                request.setAttribute("meals", getWithTimeFilter(dateFrom, dateTo, timeFrom, timeTo));
+                request.setAttribute("meals", getMealsWithTimeFilter(dateFrom, dateTo, timeFrom, timeTo));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
