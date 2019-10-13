@@ -6,15 +6,7 @@
 <html>
 <head>
     <title>Meal list</title>
-    <style>
-        .normal {
-            color: green;
-        }
-
-        .excess {
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <section>
@@ -22,6 +14,21 @@
     <hr/>
     <h2>Meals</h2>
     <a href="meals?action=create">Add Meal</a>
+    <br><br>
+    <form method="get" action="meals">
+        <div class="flex-container">
+            <input type="hidden" name="action" value="filter">
+            <div class="formElement"><label>От даты: <input type="date" name="dateFrom"></label></div>
+            <div class="formElement"><label>До даты: <input type="date" name="dateTo"></label></div>
+            <div class="formElement"><label>От времени: <input type="time" name="timeFrom"></label></div>
+            <div class="formElement"><label>До времени: <input type="time" name="timeTo"></label></div>
+        </div>
+        <button type="submit">Отфильтровать</button>
+    </form>
+    <form>
+        <input type="hidden" name="action">
+        <button type="submit">Показать все</button>
+    </form>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -34,7 +41,7 @@
         </tr>
         </thead>
         <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
             <tr class="${meal.excess ? 'excess' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
