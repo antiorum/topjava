@@ -24,15 +24,12 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        return repository.remove(id)!=null;
+        return repository.remove(id) != null;
     }
 
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        if (!repository.containsValue(user)){
-            return repository.put(counter.incrementAndGet(),user);
-        }
         return repository.put(user.getId(), user);
     }
 
@@ -45,13 +42,15 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        return repository.values().stream().sorted(Comparator.comparing(AbstractNamedEntity::getName).
-                thenComparing(AbstractNamedEntity::getId)).collect(Collectors.toList());
+        return repository.values().stream()
+                .sorted(Comparator.comparing(AbstractNamedEntity::getName).
+                        thenComparing(AbstractNamedEntity::getId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return  repository.values().stream().filter(e -> e.getEmail().equals(email)).findFirst().orElse(null);
+        return repository.values().stream().filter(e -> e.getEmail().equals(email)).findFirst().orElse(null);
     }
 }

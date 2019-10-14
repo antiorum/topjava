@@ -44,6 +44,4 @@ public class UserService {
     public void update(User user) throws NotFoundException {
         checkNotFoundWithId(repository.save(user), user.getId());
     }
-
-
 }

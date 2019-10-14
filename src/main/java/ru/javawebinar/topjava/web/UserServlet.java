@@ -22,9 +22,9 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("change user");
-        String user = request.getParameter("user");
-        if (user!=null){
-            SecurityUtil.setUserId(Integer.parseInt(user));
+        String userId = request.getParameter("userId");
+        if (userId != null) {
+            SecurityUtil.setUserId(Integer.parseInt(userId));
         }
         response.sendRedirect("meals");
     }
