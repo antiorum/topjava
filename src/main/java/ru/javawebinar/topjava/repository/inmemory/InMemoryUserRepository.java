@@ -30,6 +30,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         log.info("save {}", user);
+        if (user.isNew()){
+            user.setId(counter.incrementAndGet());
+        }
         return repository.put(user.getId(), user);
     }
 

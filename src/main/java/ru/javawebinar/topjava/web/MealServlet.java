@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
@@ -30,7 +34,19 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        controller.post(request);
+        request.setCharacterEncoding("UTF-8");
+        String idFromRequest = request.getParameter("id");
+        Meal meal = new Meal(idFromRequest.isEmpty() ? null : Integer.parseInt(idFromRequest),
+                LocalDateTime.parse(request.getParameter("dateTime")),
+                request.getParameter("description"),
+                Integer.parseInt(request.getParameter("calories")),
+                SecurityUtil.authUserId());
+        if (meal.isNew()) {
+            controller.create(meal);
+        } else {
+            controller.update(meal, Integer.parseInt(idFromRequest));
+        }
+        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         response.sendRedirect("meals");
     }
 
@@ -43,17 +59,33 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 int id = getId(request);
                 log.info("Delete {}", id);
-                controller.delete(request);
+                controller.delete(id);
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
-                Meal meal = controller.createOrUpdate(request);
+                id = 0;
+                try{
+                    id = getId(request);
+                } catch (NullPointerException e){
+
+                }
+                Meal meal = id==0 ?
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                        controller.getMeal(id);
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter":
-                request.setAttribute("meals", controller.getMealsWithTimeFilter(request));
+                String dateFrom = request.getParameter("dateFrom");
+                String dateTo = request.getParameter("dateTo");
+                String timeFrom = request.getParameter("timeFrom");
+                String timeTo = request.getParameter("timeTo");
+                LocalDate from = dateFrom.isEmpty() ? null : LocalDate.parse(dateFrom);
+                LocalDate to = dateTo.isEmpty() ? null : LocalDate.parse(dateTo);
+                LocalTime fromTime = timeFrom.isEmpty() ? null : LocalTime.parse(timeFrom);
+                LocalTime toTime = timeTo.isEmpty()? null : LocalTime.parse(timeTo);
+                request.setAttribute("meals", controller.getWithTimeFilter(from, to, fromTime, toTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":

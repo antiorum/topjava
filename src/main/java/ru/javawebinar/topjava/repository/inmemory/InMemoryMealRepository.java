@@ -7,11 +7,10 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -30,40 +29,39 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<Integer, Meal>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meal.setUserId(userId);
         }
         // treat case: update, but not present in storage
         //return repo.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
-        repo.get(userId).put(meal.getId(), meal);
-        return meal;
+        return repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<Integer, Meal>());
-        return repo.get(userId).remove(id) != null;
+        return repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<>()).remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<Integer, Meal>());
-        return repo.get(userId).get(id);
+        return repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<>()).get(id);
     }
 
     @Override
     public List<Meal> getAll(int userId) {
-        repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<Integer, Meal>());
-        return repo.get(userId).values() == null ? new ArrayList<Meal>() : new ArrayList<Meal>(repo.get(userId).values());
+        return getWithPredicate(userId, meal -> true);
     }
 
     @Override
     public List<Meal> getFilteredByDate(int userId, LocalDate from, LocalDate to) {
-        repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<Integer, Meal>());
-        return getAll(userId).stream()
-                .filter(e -> DateTimeUtil.isBetween(e.getDate(), from, to))
+        return getWithPredicate(userId, meal -> DateTimeUtil.isBetween(meal.getDate(), from, to));
+    }
+
+    private List<Meal> getWithPredicate (int userId, Predicate<Meal> filter){
+        return repo.computeIfAbsent(userId, k -> new ConcurrentHashMap<>()).values().stream()
+                .sorted(Comparator.comparing(Meal::getDate).reversed())
+                .filter(filter)
                 .collect(Collectors.toList());
     }
 }
