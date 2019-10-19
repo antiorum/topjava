@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.web.user;
+package ru.javawebinar.topjava.web.meal;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,24 +7,22 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.UserTestData;
-import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
+import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
-
-import static ru.javawebinar.topjava.UserTestData.ADMIN;
+import java.util.List;
 
 @ContextConfiguration("classpath:spring-app.xml")
 @RunWith(SpringRunner.class)
-public class InMemoryAdminRestControllerSpringTest {
+public class InMemoryMealRestControllerSpringTest {
+    @Autowired
+    private MealRestController mealRestController;
 
     @Autowired
-    private AdminRestController controller;
-
-    @Autowired
-    private InMemoryUserRepository repository;
+    private InMemoryMealRepository repository;
 
     @Before
     public void setUp() throws Exception {
@@ -32,15 +30,14 @@ public class InMemoryAdminRestControllerSpringTest {
     }
 
     @Test
-    public void delete() throws Exception {
-        controller.delete(UserTestData.USER_ID);
-        Collection<User> users = controller.getAll();
-        Assert.assertEquals(users.size(), 1);
-        Assert.assertEquals(users.iterator().next(), ADMIN);
+    public void delete () throws Exception {
+        mealRestController.delete(3);
+        List<MealTo> mealTos = mealRestController.getAll();
+        Assert.assertEquals(5, mealTos.size());
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFound() throws Exception {
-        controller.delete(10);
+        mealRestController.delete(10);
     }
 }
