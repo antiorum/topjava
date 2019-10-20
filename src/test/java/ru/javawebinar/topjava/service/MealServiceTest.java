@@ -40,39 +40,35 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        Meal meal = service.get(MEAL1.getId(), USER_ID);
-        assertThat(meal).isEqualToComparingFieldByField(MEAL1);
+        Meal meal = service.get(USER_MEAL1.getId(), USER_ID);
+        assertMatch(meal, USER_MEAL1);
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL1.getId(), USER_ID);
-        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
-                .isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2));
+        service.delete(USER_MEAL1.getId(), USER_ID);
+        assertMatch(service.getAll(USER_ID),Arrays.asList(USER_MEAL4, USER_MEAL3, USER_MEAL2));
     }
 
     @Test
     public void getBetweenDates() {
         LocalDate dateBefore = LocalDate.of(2015, 5, 31);
         LocalDate dateAfter = LocalDate.of(2015, 6, 1);
-        assertThat(service.getBetweenDates(dateBefore, dateAfter, USER_ID))
-                .usingElementComparatorOnFields("id", "dateTime", "description", "calories")
-                .isEqualTo(Arrays.asList(MEAL4, MEAL3));
+        assertMatch(service.getBetweenDates(dateBefore, dateAfter, USER_ID), Arrays.asList(USER_MEAL4, USER_MEAL3));
     }
 
     @Test
     public void getAll() {
-        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
-                .isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2, MEAL1));
+        assertMatch(service.getAll(USER_ID), Arrays.asList(USER_MEAL4, USER_MEAL3, USER_MEAL2, USER_MEAL1));
     }
 
     @Test
     public void update() {
-        Meal meal = new Meal(MEAL4.getId(),
+        Meal meal = new Meal(USER_MEAL4.getId(),
                 LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10),
                 "dinner", 222);
         service.update(meal, USER_ID);
-        assertThat(meal).isEqualToComparingFieldByField(service.get(MEAL4.getId(), USER_ID));
+        assertMatch(meal, service.get(USER_MEAL4.getId(), USER_ID));
     }
 
     @Test
@@ -82,18 +78,17 @@ public class MealServiceTest {
                 "beer", 164);
         Meal created = service.create(meal, USER_ID);
         meal.setId(created.getId());
-        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
-                .isEqualTo(Arrays.asList(meal, MEAL4, MEAL3, MEAL2, MEAL1));
+        assertMatch(service.getAll(USER_ID), Arrays.asList(meal, USER_MEAL4, USER_MEAL3, USER_MEAL2, USER_MEAL1));
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteWrongUser() {
-        service.delete(MEAL1.getId(), ADMIN_ID);
+        service.delete(USER_MEAL1.getId(), ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateWrongUser() {
-        Meal meal = new Meal(MEAL4.getId(),
+        Meal meal = new Meal(USER_MEAL4.getId(),
                 LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10),
                 "dinner", 222);
         service.update(meal, ADMIN_ID);
@@ -101,7 +96,7 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void getWrongUser() {
-        service.get(MEAL4.getId(), ADMIN_ID);
+        service.get(USER_MEAL4.getId(), ADMIN_ID);
     }
 
     @Test(expected = DataAccessException.class)
