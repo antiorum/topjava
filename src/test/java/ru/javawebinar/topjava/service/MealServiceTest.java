@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -41,61 +40,74 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        Meal meal = service.get(MealTestData.COUNTER, MealTestData.COUNTER);
-        assertThat(meal).isEqualTo(MEAL1);
+        Meal meal = service.get(MEAL1.getId(), USER_ID);
+        assertThat(meal).isEqualToComparingFieldByField(MEAL1);
     }
 
     @Test
     public void delete() {
-        service.delete(100000, USER_ID);
-        assertThat(service.getAll(USER_ID)).usingDefaultComparator().isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2));
+        service.delete(MEAL1.getId(), USER_ID);
+        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
+                .isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2));
     }
 
     @Test
     public void getBetweenDates() {
         LocalDate dateBefore = LocalDate.of(2015, 5, 31);
         LocalDate dateAfter = LocalDate.of(2015, 6, 1);
-        assertThat(service.getBetweenDates(dateBefore, dateAfter, USER_ID)).usingDefaultComparator().isEqualTo(Arrays.asList(MEAL4, MEAL3));
+        assertThat(service.getBetweenDates(dateBefore, dateAfter, USER_ID))
+                .usingElementComparatorOnFields("id", "dateTime", "description", "calories")
+                .isEqualTo(Arrays.asList(MEAL4, MEAL3));
     }
 
     @Test
     public void getAll() {
-        assertThat(service.getAll(USER_ID)).usingDefaultComparator().isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2, MEAL1));
+        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
+                .isEqualTo(Arrays.asList(MEAL4, MEAL3, MEAL2, MEAL1));
     }
 
     @Test
     public void update() {
-        Meal meal = new Meal(COUNTER + 3, LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10), "dinner", 222);
+        Meal meal = new Meal(MEAL4.getId(),
+                LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10),
+                "dinner", 222);
         service.update(meal, USER_ID);
-        assertThat(meal).isEqualTo(service.get(COUNTER + 3, USER_ID));
+        assertThat(meal).isEqualToComparingFieldByField(service.get(MEAL4.getId(), USER_ID));
     }
 
     @Test
     public void create() {
-        Meal meal = new Meal(null, LocalDateTime.of(2017, Month.NOVEMBER, 11, 11, 11, 11), "beer", 164);
+        Meal meal = new Meal(null,
+                LocalDateTime.of(2017, Month.NOVEMBER, 11, 11, 11, 11),
+                "beer", 164);
         Meal created = service.create(meal, USER_ID);
         meal.setId(created.getId());
-        assertThat(service.getAll(USER_ID)).usingDefaultComparator().isEqualTo(Arrays.asList(meal, MEAL4, MEAL3, MEAL2, MEAL1));
+        assertThat(service.getAll(USER_ID)).usingElementComparatorOnFields("id", "dateTime", "description", "calories")
+                .isEqualTo(Arrays.asList(meal, MEAL4, MEAL3, MEAL2, MEAL1));
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteWrongUser() {
-        service.delete(COUNTER, ADMIN_ID);
+        service.delete(MEAL1.getId(), ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateWrongUser() {
-        Meal meal = new Meal(COUNTER + 3, LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10), "dinner", 222);
+        Meal meal = new Meal(MEAL4.getId(),
+                LocalDateTime.of(2015, Month.MAY, 31, 20, 11, 10),
+                "dinner", 222);
         service.update(meal, ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void getWrongUser() {
-        service.get(COUNTER + 3, ADMIN_ID);
+        service.get(MEAL4.getId(), ADMIN_ID);
     }
 
     @Test(expected = DataAccessException.class)
     public void createDuplicateDate() {
-        service.create(new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 10, 11, 10), "breakfast", 888), USER_ID);
+        service.create(new Meal(null,
+                LocalDateTime.of(2015, Month.MAY, 31, 10, 11, 10),
+                "breakfast", 888), USER_ID);
     }
 }

@@ -3,19 +3,18 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class Meal extends AbstractBaseEntity {
-    private LocalDateTime dateTime = LocalDateTime.now();
+    private LocalDateTime dateTime;
 
-    private String description = "";
+    private String description;
 
-    private int calories = 0;
+    private int calories;
 
-    public Meal(){
+    public Meal() {
     }
 
-    public Meal(Meal meal){
+    public Meal(Meal meal) {
         this(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories());
     }
 
@@ -43,7 +42,7 @@ public class Meal extends AbstractBaseEntity {
     }
 
     public LocalDate getDate() {
-        return Objects.requireNonNull(dateTime).toLocalDate();
+        return dateTime.toLocalDate();
     }
 
     public LocalTime getTime() {
