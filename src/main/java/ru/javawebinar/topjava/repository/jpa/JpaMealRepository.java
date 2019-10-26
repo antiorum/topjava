@@ -9,6 +9,7 @@ import ru.javawebinar.topjava.repository.MealRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,12 +31,14 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            try {
-                if (get(meal.getId(), userId).getUser().getId() != userId) throw new NullPointerException();
-            } catch (NullPointerException e) {
-                return null;
-            }
-            return em.merge(meal);
+            Query query = em.createQuery("update Meal m set m.dateTime=:dateTime, m.description=:description, m.calories=:calories, m.user=:user where m.user.id=:userId and m.id=:id");
+            return query.setParameter("dateTime", meal.getDateTime())
+                    .setParameter("id", meal.getId())
+                    .setParameter("description", meal.getDescription())
+                    .setParameter("calories", meal.getCalories())
+                    .setParameter("user", user)
+                    .setParameter("userId", userId)
+                    .executeUpdate() == 0 ? null : meal;
         }
     }
 
