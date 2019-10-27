@@ -1,16 +1,20 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.*;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.StopWatch;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -18,6 +22,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -33,38 +38,29 @@ public class MealServiceTest {
     @Autowired
     private MealService service;
 
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+
     private static Map<String, Long> testAndTime = new LinkedHashMap<>();
 
     @Rule
-    public final TestName name = new TestName();
+    public Stopwatch stopwatch = new Stopwatch(){
+        @Override
+        protected void finished(long nanos, Description description) {
+            String testName = description.getMethodName();
+            log.info(String.format("Test %s %s, spent %d milliseconds", testName, "finished", TimeUnit.NANOSECONDS.toMillis(nanos)));
+            testAndTime.put(testName, TimeUnit.NANOSECONDS.toMillis(nanos));
+        }
+    };
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
-
-    @Rule
-    public final TestRule watchman = new TestWatcher() {
-        long start = 0;
-
-        @Override
-        protected void starting(Description description) {
-            start = System.currentTimeMillis();
-        }
-
-        @Override
-        protected void finished(Description description) {
-            Long time = (System.currentTimeMillis() - start);
-            System.out.println("Test passed for " + time + " ms");
-            testAndTime.put(name.getMethodName(), time);
-        }
-    };
 
     @ClassRule
     public static final ExternalResource resource = new ExternalResource() {
         @Override
         protected void after() {
-            System.out.println("*****************************************************************************************");
             for (Map.Entry<String, Long> testTime : testAndTime.entrySet()) {
-                System.out.println(testTime.getKey() + " test passed for " + testTime.getValue() + " ms");
+                log.info(testTime.getKey() + " test finished, spent " + testTime.getValue() + " ms");
             }
         }
     };
