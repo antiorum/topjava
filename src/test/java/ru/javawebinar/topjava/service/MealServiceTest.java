@@ -1,10 +1,11 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.*;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -14,14 +15,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.StopWatch;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -40,15 +39,15 @@ public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
-    private static Map<String, Long> testAndTime = new LinkedHashMap<>();
+    private static String testResult = "";
 
     @Rule
-    public Stopwatch stopwatch = new Stopwatch(){
+    public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
             String testName = description.getMethodName();
             log.info(String.format("Test %s %s, spent %d milliseconds", testName, "finished", TimeUnit.NANOSECONDS.toMillis(nanos)));
-            testAndTime.put(testName, TimeUnit.NANOSECONDS.toMillis(nanos));
+            testResult += String.format("%-18s %-20s %d ms", "", testName, TimeUnit.NANOSECONDS.toMillis(nanos)) + "\n";
         }
     };
 
@@ -59,9 +58,7 @@ public class MealServiceTest {
     public static final ExternalResource resource = new ExternalResource() {
         @Override
         protected void after() {
-            for (Map.Entry<String, Long> testTime : testAndTime.entrySet()) {
-                log.info(testTime.getKey() + " test finished, spent " + testTime.getValue() + " ms");
-            }
+            log.info("All tests finished:" + "\n" + "\u001B[32m" + testResult + "\u001B[0m");
         }
     };
 
@@ -121,6 +118,13 @@ public class MealServiceTest {
     public void updateNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
         service.update(MEAL1, ADMIN_ID);
+    }
+
+    @Test
+    public void updateNotExist() throws Exception {
+        thrown.expect(NotFoundException.class);
+        Meal meal = new Meal(125, LocalDateTime.now(), "lol", 9999);
+        service.update(meal, ADMIN_ID);
     }
 
     @Test

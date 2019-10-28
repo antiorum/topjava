@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,9 +28,17 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            Meal fromDB = em.getReference(Meal.class, meal.getId());
-            if (fromDB.getUser().getId()!=userId) return null;
-            return em.merge(meal);
+//            Meal fromDB = em.find(Meal.class, meal.getId());
+//            if ((fromDB == null)||(fromDB.getUser().getId() != userId)) return null;
+//            return em.merge(meal);
+//            or
+            try {
+                Meal fromDB = em.getReference(Meal.class, meal.getId());
+                if ((fromDB.getUser().getId() != userId)) return null;
+                return em.merge(meal);
+            } catch (EntityNotFoundException e) {
+                return null;
+            }
         }
     }
 
