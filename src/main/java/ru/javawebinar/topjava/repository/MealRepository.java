@@ -2,9 +2,11 @@ package ru.javawebinar.topjava.repository;
 
 import org.springframework.lang.Nullable;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface MealRepository {
     // null if updated meal do not belong to userId
@@ -21,4 +23,8 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getBetweenInclusive(@Nullable LocalDate startDate, @Nullable LocalDate endDate, int userId);
-}
+
+    default Meal getMealWithUser(int id, int userId){
+        throw new UnsupportedOperationException();
+    }
+ }
