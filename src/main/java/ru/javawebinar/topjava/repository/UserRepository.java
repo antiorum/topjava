@@ -1,10 +1,8 @@
 package ru.javawebinar.topjava.repository;
 
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 
 import java.util.List;
-import java.util.Map;
 
 public interface UserRepository {
     // null if not found, when updated
@@ -21,8 +19,7 @@ public interface UserRepository {
 
     List<User> getAll();
 
-
-    default User getUserWithMeals(int userId){
+    default User getUserWithMeals(int userId) {
         throw new UnsupportedOperationException();
     }
 }

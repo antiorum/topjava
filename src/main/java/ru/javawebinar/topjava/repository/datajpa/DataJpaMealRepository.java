@@ -6,13 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class DataJpaMealRepository implements MealRepository {
@@ -20,12 +18,12 @@ public class DataJpaMealRepository implements MealRepository {
     @Autowired
     private CrudMealRepository crudRepository;
     @Autowired
-    private UserRepository userRepo;
+    private CrudUserRepository userRepo;
 
     @Transactional
     @Override
     public Meal save(Meal meal, int userId) {
-        User user = userRepo.get(userId);
+        User user = userRepo.getOne(userId);
         if (!meal.isNew() && get(meal.getId(), userId) == null) return null;
         meal.setUser(user);
         return crudRepository.save(meal);
@@ -43,26 +41,18 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        User u = new User();
-        u.setId(userId);
-        return crudRepository.getAllByUserOrderByDateTimeDesc(u);
+        return crudRepository.getAllByUser_IdOrderByDateTimeDesc(userId);
     }
 
     @Override
     public List<Meal> getBetweenInclusive(LocalDate startDate, LocalDate endDate, int userId) {
         LocalDateTime start = DateTimeUtil.getStartInclusive(startDate);
         LocalDateTime end = DateTimeUtil.getEndExclusive(endDate);
-        User u = new User();
-        u.setId(userId);
-        return crudRepository.getAllByDateTimeGreaterThanEqualAndDateTimeLessThanAndUserOrderByDateTimeDesc(start, end, u);
+        return crudRepository.getAllByDateTimeGreaterThanEqualAndDateTimeLessThanAndUser_IdOrderByDateTimeDesc(start, end, userId);
     }
 
-    @Transactional
     @Override
     public Meal getMealWithUser(int id, int userId) {
-        User u = userRepo.get(userId);
-        Meal meal = get(id, userId);
-        meal.setUser(u);
-        return meal;
+        return crudRepository.getWithUser(id, userId);
     }
 }
