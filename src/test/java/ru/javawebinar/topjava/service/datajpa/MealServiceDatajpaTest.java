@@ -8,15 +8,18 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import static ru.javawebinar.topjava.MealTestData.MEAL1_ID;
-import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ActiveProfiles({Profiles.DATAJPA})
 public class MealServiceDatajpaTest extends MealServiceTest {
 
     @Test
     public void getMealWithUser() {
-        assertMatch(service.getWithUser(MEAL1_ID, USER_ID).getUser(), UserTestData.USER);
+        Meal meal = service.getWithUser(MEAL1_ID, USER_ID);
+        assertMatch(meal, MEAL1);
+        UserTestData.assertMatch(meal.getUser(), UserTestData.USER);
     }
 
     @Test(expected = NotFoundException.class)

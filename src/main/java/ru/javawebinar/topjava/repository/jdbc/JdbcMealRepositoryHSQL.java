@@ -24,18 +24,6 @@ public class JdbcMealRepositoryHSQL extends JdbcMealRepository {
     }
 
     @Override
-    public Meal save(Meal meal, int userId) {
-        MapSqlParameterSource map = new MapSqlParameterSource()
-                .addValue("id", meal.getId())
-                .addValue("description", meal.getDescription())
-                .addValue("calories", meal.getCalories())
-                .addValue("date_time", Timestamp.valueOf(meal.getDateTime()))
-                .addValue("user_id", userId);
-
-        return insertMealAndReturn(meal, map);
-    }
-
-    @Override
     public List<Meal> getBetweenInclusive(LocalDate startDate, LocalDate endDate, int userId) {
         Date start = Timestamp.valueOf(getStartInclusive(startDate));
         Date end = Timestamp.valueOf(getEndExclusive(endDate));
@@ -44,4 +32,17 @@ public class JdbcMealRepositoryHSQL extends JdbcMealRepository {
                 "SELECT * FROM meals WHERE user_id=? AND date_time >=? AND date_time < ? ORDER BY date_time DESC",
                 ROW_MAPPER, userId, start, end);
     }
+
+    @Override
+    public MapSqlParameterSource getParameterMap(Meal meal, int userId) {
+        MapSqlParameterSource map = new MapSqlParameterSource()
+                .addValue("id", meal.getId())
+                .addValue("description", meal.getDescription())
+                .addValue("calories", meal.getCalories())
+                .addValue("date_time", Timestamp.valueOf(meal.getDateTime()))
+                .addValue("user_id", userId);
+        return map;
+    }
+
+
 }
