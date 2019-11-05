@@ -27,7 +27,8 @@ public class UserServiceDatajpaTest extends UserServiceTest {
     public void getIfHaveNotMeals() {
         User user = new User(42, "xx", "xxx@mail.ru", "passsss", Role.ROLE_USER);
         User fromDB = service.getWithMeal(service.create(user).getId());
-        assertThat(fromDB).isEqualToIgnoringGivenFields(user, "id", "meals", "registered");
+        user.setId(fromDB.getId());
+        UserTestData.assertMatch(fromDB, user);
         assertThat(fromDB.getMeals().size()).isZero();
     }
 }

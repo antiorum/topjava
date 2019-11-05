@@ -34,15 +34,7 @@ public class JdbcMealRepositoryHSQL extends JdbcMealRepository {
     }
 
     @Override
-    public MapSqlParameterSource getParameterMap(Meal meal, int userId) {
-        MapSqlParameterSource map = new MapSqlParameterSource()
-                .addValue("id", meal.getId())
-                .addValue("description", meal.getDescription())
-                .addValue("calories", meal.getCalories())
-                .addValue("date_time", Timestamp.valueOf(meal.getDateTime()))
-                .addValue("user_id", userId);
-        return map;
+    public void addDateTime(MapSqlParameterSource map, Meal meal) {
+        map.addValue("date_time", Timestamp.valueOf(meal.getDateTime()));
     }
-
-
 }
