@@ -5,7 +5,8 @@
 <html>
 <head>
     <jsp:include page="fragments/headTag.jsp"/>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
@@ -14,7 +15,7 @@
         <spring:message code="${title.equals('create') ? 'meal.create' : 'meal.edit'}"/>
     </h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="${pageContext.request.contextPath}/meals">
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.dateTime"/>:</dt>

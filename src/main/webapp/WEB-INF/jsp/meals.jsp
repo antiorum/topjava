@@ -6,13 +6,14 @@
 <html>
 <head>
     <jsp:include page="fragments/headTag.jsp"/>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <h2><spring:message code="meal.title"/></h2>
-    <form method="get" action="${pageContext.request.contextPath}/meals/filter">
+    <form method="get" action="meals/filter">
         <dl>
             <dt><spring:message code="meal.dateFrom"/>:</dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -32,7 +33,7 @@
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr/>
-    <a href="${pageContext.request.contextPath}/meals/create"><spring:message code="meal.add"/></a>
+    <a href="meals/create"><spring:message code="meal.add"/></a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -55,8 +56,8 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="${pageContext.request.contextPath}/meals/update/id=${meal.id}"><spring:message code="common.update"/></a></td>
-                <td><a href="${pageContext.request.contextPath}/meals/delete/id=${meal.id}"><spring:message code="common.delete"/></a></td>
+                <td><a href="meals/update/${meal.id}"><spring:message code="common.update"/></a></td>
+                <td><a href="meals/delete/${meal.id}"><spring:message code="common.delete"/></a></td>
             </tr>
         </c:forEach>
     </table>

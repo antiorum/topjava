@@ -4,16 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,14 +23,13 @@ public class JspRestController extends AbstractMealController {
     }
 
     @GetMapping
-    public String getMeals(Model model){
+    public String getMeals(Model model) {
         model.addAttribute("meals", super.getAll());
         return "meals";
     }
 
     @PostMapping
     public String postMeals(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
@@ -50,36 +44,34 @@ public class JspRestController extends AbstractMealController {
         return "meals";
     }
 
-    @GetMapping("/delete/id={id}")
-    public String deleteMeal(@PathVariable int id){
+    @GetMapping("/delete/{id}")
+    public String deleteAndRedirect(@PathVariable int id) {
         super.delete(id);
-        return "redirect:http://localhost:8080/topjava/meals";
+        return "redirect:/meals";
     }
 
-    @GetMapping("/update/id={id}")
-    public String updateMeal(@PathVariable int id, HttpServletRequest request, Model model) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
+    @GetMapping("/update/{id}")
+    public String update(@PathVariable int id, HttpServletRequest request, Model model) throws UnsupportedEncodingException {
         Meal meal = super.get(id);
-        model.addAttribute("title","update");
+        model.addAttribute("title", "update");
         request.setAttribute("meal", meal);
         return "mealForm";
     }
 
     @GetMapping("/create")
-    public String createMeal(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
+    public String create(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
         Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
-        model.addAttribute("title","create");
+        model.addAttribute("title", "create");
         request.setAttribute("meal", meal);
         return "mealForm";
     }
 
     @GetMapping("/filter")
-    public String filteredMeals(@RequestParam String startDate,
+    public String filtered(@RequestParam String startDate,
                                 @RequestParam String endDate,
                                 @RequestParam String startTime,
                                 @RequestParam String endTime,
-                                Model model){
+                                Model model) {
         LocalDate date1 = DateTimeUtil.parseLocalDate(startDate);
         LocalDate date2 = DateTimeUtil.parseLocalDate(endDate);
         LocalTime time1 = DateTimeUtil.parseLocalTime(startTime);
