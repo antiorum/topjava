@@ -3,20 +3,22 @@ package ru.javawebinar.topjava.web.meal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,12 +42,9 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(new ResultMatcher() {
-                    @Override
-                    public void match(MvcResult result) throws Exception {
-                        List<Meal> fromMvc = readListFromJsonMvcResult(result, Meal.class);
-                        assertMatch(fromMvc, MEALS);
-                    }
+                .andExpect(result -> {
+                    List<MealTo> fromMvc = readListFromJsonMvcResult(result, MealTo.class);
+                    assertEquals(fromMvc, MealsUtil.getTos(MEALS, SecurityUtil.authUserCaloriesPerDay()));
                 });
     }
 
@@ -97,6 +96,21 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson((Arrays.asList(MEAL5, MEAL1))));
+                .andExpect(result -> {
+                    List<MealTo> fromMvc = readListFromJsonMvcResult(result, MealTo.class);
+                    assertThat(fromMvc).usingElementComparatorIgnoringFields("excess").isEqualTo(MealsUtil.getTos(List.of(MEAL5, MEAL1), SecurityUtil.authUserCaloriesPerDay()));
+                });
+    }
+
+    @Test
+    void filterEmpty() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(MEAL_URL + "filter?startDate=&startTime="))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(result -> {
+                    List<MealTo> fromMvc = readListFromJsonMvcResult(result, MealTo.class);
+                    assertEquals(fromMvc, MealsUtil.getTos(MEALS, SecurityUtil.authUserCaloriesPerDay()));
+                });
     }
 }

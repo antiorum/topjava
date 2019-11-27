@@ -7,6 +7,7 @@ import java.time.LocalTime;
 public class LocalTimeConverter implements Converter<String, LocalTime> {
     @Override
     public LocalTime convert(String source) {
+        if (source.equals("null")) return null;
         return DateTimeUtil.parseLocalTime(source);
     }
 }

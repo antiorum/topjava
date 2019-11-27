@@ -38,7 +38,7 @@ class RootControllerTest extends AbstractControllerTest {
     @Test
     public void testMeals() throws Exception {
         mockMvc.perform(post("/users").param("userId", "100000"));
-        List<MealTo> expected = MealsUtil.getFilteredTos(MealTestData.MEALS, USER.getCaloriesPerDay(), LocalTime.MIN, LocalTime.MAX);
+        List<MealTo> expected = MealsUtil.getFilteredTos(MealTestData.MEALS, SecurityUtil.authUserCaloriesPerDay(), LocalTime.MIN, LocalTime.MAX);
 
         mockMvc.perform(get("/meals"))
                 .andDo(print())

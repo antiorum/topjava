@@ -17,7 +17,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml",
-        "classpath:spring/cache.xml"
+        "classpath:spring/disablecachefortests.xml"
 })
 //@ExtendWith(SpringExtension.class)
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
