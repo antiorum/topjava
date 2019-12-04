@@ -46,12 +46,12 @@
                     <spring:message code="meal.filter"/>
                 </button>
                 <button type="button" class="btn btn-primary" onclick="resetForm()">
-                    <span class="fa fa-stop"></span>
+                    <span class="fa fa-arrow-circle-left"></span>
                     <spring:message code="meal.reset"/>
                 </button>
             </form>
 
-            <button class="btn btn-primary" onclick="add()">
+            <button class="btn btn-primary" onclick="writeFormValuesAndAdd()">
                 <span class="fa fa-plus"></span>
                 <spring:message code="common.add"/>
             </button>
@@ -76,7 +76,6 @@
                         </td>
                         <td>${meal.description}</td>
                         <td>${meal.calories}</td>
-                        <
                         <td><a><span class="fa fa-pencil"></span></a></td>
                         <td><a class="delete"><span class="fa fa-remove"></span></a></td>
                     </tr>
@@ -85,7 +84,7 @@
         </div>
     </div>
 </section>
-<div class="modal fade" tabindex="-1" id="editRow">
+<div class="modal fade"  id="editRow">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -121,7 +120,7 @@
                     <span class="fa fa-close"></span>
                     <spring:message code="common.cancel"/>
                 </button>
-                <button type="button" class="btn btn-primary" onclick="save()">
+                <button type="button" class="btn btn-primary" onclick="saveMeal()">
                     <span class="fa fa-check"></span>
                     <spring:message code="common.save"/>
                 </button>

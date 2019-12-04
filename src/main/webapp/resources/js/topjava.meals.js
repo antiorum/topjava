@@ -34,23 +34,23 @@ $(function () {
     );
 });
 
-jQuery('#dateTime').datetimepicker({
+$('#dateTime').datetimepicker({
     format: 'Y-m-d H:i'
 });
 
-jQuery('#startDate').datetimepicker({
+$('#startDate').datetimepicker({
     timepicker:false,
     format:'Y-m-d'
 });
-jQuery('#endDate').datetimepicker({
+$('#endDate').datetimepicker({
     timepicker:false,
     format:'Y-m-d'
 });
-jQuery('#startTime').datetimepicker({
+$('#startTime').datetimepicker({
     datepicker:false,
     format:'H:i'
 });
-jQuery('#endTime').datetimepicker({
+$('#endTime').datetimepicker({
     datepicker:false,
     format:'H:i'
 });
@@ -67,7 +67,33 @@ function filter() {
     });
 }
 
+function saveMeal() {
+    form=$('#detailsForm');
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl,
+        data: form.serialize()
+    }).done(function () {
+        $("#editRow").modal("hide");
+        filter();
+        successNoty("Saved");
+    });
+}
+
 function resetForm() {
     $('#filterForm')[0].reset();
     updateTable();
+}
+
+function writeFormValuesAndAdd() {
+    //sad, but true
+    var startDate = $('#startDate').val();
+    var endDate = $('#endDate').val();
+    var startTime = $('#startTime').val();
+    var endTime = $('#endTime').val();
+    add();
+    $('#startDate').val(startDate);
+    $('#endDate').val(endDate);
+    $('#startTime').val(startTime);
+    $('#endTime').val(endTime);
 }

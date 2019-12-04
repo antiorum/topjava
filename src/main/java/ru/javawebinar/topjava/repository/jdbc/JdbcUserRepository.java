@@ -115,4 +115,12 @@ public class JdbcUserRepository implements UserRepository {
         }
         return u;
     }
+
+    @Override
+    public boolean enableOrDisable(int id, boolean enabled) {
+        Map<String, Object> namedParameters = new HashMap<>();
+        namedParameters.put("id", id);
+        namedParameters.put("enabled", enabled);
+        return namedParameterJdbcTemplate.update("UPDATE users SET enabled=:enabled WHERE id=:id", namedParameters) != 0;
+    }
 }
