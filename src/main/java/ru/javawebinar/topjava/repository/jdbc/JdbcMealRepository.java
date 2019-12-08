@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +40,8 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     @Transactional
-    public Meal save(Meal meal, int userId) {
+    @NotNull
+    public Meal save(@Valid Meal meal,@NotNull int userId) {
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
@@ -63,25 +66,29 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     @Transactional
-    public boolean delete(int id, int userId) {
+    @NotNull
+    public boolean delete(@NotNull int id,@NotNull int userId) {
         return jdbcTemplate.update("DELETE FROM meals WHERE id=? AND user_id=?", id, userId) != 0;
     }
 
     @Override
-    public Meal get(int id, int userId) {
+    @NotNull
+    public Meal get(@NotNull int id,@NotNull int userId) {
         List<Meal> meals = jdbcTemplate.query(
                 "SELECT * FROM meals WHERE id = ? AND user_id = ?", ROW_MAPPER, id, userId);
         return DataAccessUtils.singleResult(meals);
     }
 
     @Override
-    public List<Meal> getAll(int userId) {
+    @NotNull
+    public List<Meal> getAll(@NotNull int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC", ROW_MAPPER, userId);
     }
 
     @Override
-    public List<Meal> getBetweenInclusive(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
+    @NotNull
+    public List<Meal> getBetweenInclusive(@NotNull LocalDateTime startDateTime,@NotNull LocalDateTime endDateTime,@NotNull int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=? AND date_time >=? AND date_time < ? ORDER BY date_time DESC",
                 ROW_MAPPER, userId, startDateTime, endDateTime);
