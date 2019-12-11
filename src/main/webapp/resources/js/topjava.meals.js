@@ -28,7 +28,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (date, type, row) {
                         if (type === "display") {
-                            return date.substring(0, 10)+" "+date.substring(11,16);
+                            return formatDateTimeFromISO(date)
                         }
                         return date;
                     }
@@ -68,6 +68,7 @@ $(function () {
     });
 });
 
+
 $('#dateTime').datetimepicker({
     format: 'Y-m-d H:i'
 });
@@ -76,15 +77,46 @@ $('#startDate').datetimepicker({
     timepicker: false,
     format: 'Y-m-d'
 });
+
+
 $('#endDate').datetimepicker({
     timepicker: false,
-    format: 'Y-m-d'
+    format: 'Y-m-d',
 });
 $('#startTime').datetimepicker({
     datepicker: false,
     format: 'H:i'
 });
+
 $('#endTime').datetimepicker({
     datepicker: false,
-    format: 'H:i'
+    format: 'H:i',
 });
+
+const $startTime = document.querySelector('#startTime');
+let startTime = '00:00';
+$startTime.addEventListener('input', function () {
+    startTime = $startTime.value === '' ? '00:00' : $startTime.value;
+    $('#endTime').datetimepicker({
+        minTime: startTime
+    })
+});
+
+const $endTime = document.querySelector('#endTime');
+let endTime = '24:00';
+$endTime.addEventListener('input', function () {
+    endTime = $endTime.value === '' ? '24:00' : $endTime.value;
+    $('#startTime').datetimepicker({
+        maxTime: endTime
+    })
+});
+
+const $startDate = document.querySelector('#startDate');
+let startDate = '1970-01-01';
+$startDate.addEventListener('input', function () {
+    startDate = $startDate.value === '' ? '1970-01-01' : $startDate.value;
+    $('#endDate').datetimepicker({
+        minDate: startDate
+    });
+});
+

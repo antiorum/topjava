@@ -17,12 +17,16 @@ function add() {
     $("#editRow").modal();
 }
 
+function formatDateTimeFromISO(value) {
+    return value.substring(0, 10) + ' ' + value.substring(11, 16);
+}
+
 function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            if (key=="dateTime"){
-                value = value.substring(0, 10)+" "+value.substring(11,16);
+            if (key === "dateTime") {
+                value = formatDateTimeFromISO(value)
             }
             form.find("input[name='" + key + "']").val(value);
         });

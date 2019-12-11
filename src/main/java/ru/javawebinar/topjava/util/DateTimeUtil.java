@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class DateTimeUtil {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // HSQLDB doesn't support LocalDate.MIN/MAX
     private static final LocalDateTime MIN_DATE = LocalDateTime.of(1, 1, 1, 0, 0);
@@ -23,17 +23,19 @@ public class DateTimeUtil {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
 
-    public static @Nullable LocalDate parseLocalDate(@Nullable String str) {
+    public static @Nullable
+    LocalDate parseLocalDate(@Nullable String str) {
         return StringUtils.isEmpty(str) ? null : LocalDate.parse(str);
     }
 
-    public static @Nullable LocalTime parseLocalTime(@Nullable String str) {
+    public static @Nullable
+    LocalTime parseLocalTime(@Nullable String str) {
         return StringUtils.isEmpty(str) ? null : LocalTime.parse(str);
     }
 
-    public static @Nullable LocalDateTime parseLocalDatetime(@Nullable String str){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return StringUtils.isEmpty(str) ? null : LocalDateTime.parse(str, formatter);
+    public static @Nullable
+    LocalDateTime parseLocalDatetime(@Nullable String str) {
+        return StringUtils.isEmpty(str) ? null : LocalDateTime.parse(str, DATE_TIME_FORMATTER);
     }
 
     public static LocalDateTime getStartInclusive(LocalDate localDate) {

@@ -38,18 +38,7 @@ public class AdminUIController extends AbstractUserController {
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo, BindingResult result) {
         if (result.hasErrors()) {
-            StringJoiner joiner = new StringJoiner("<br>");
-            result.getFieldErrors().forEach(
-                    fe -> {
-                        String msg = fe.getDefaultMessage();
-                        if (msg != null) {
-                            if (!msg.startsWith(fe.getField())) {
-                                msg = fe.getField() + ' ' + msg;
-                            }
-                            joiner.add(msg);
-                        }
-                    });
-            return ResponseEntity.unprocessableEntity().body(joiner.toString());
+            return resultErrorHandler(result);
         }
         if (userTo.isNew()) {
             super.create(userTo);
@@ -57,6 +46,21 @@ public class AdminUIController extends AbstractUserController {
             super.update(userTo, userTo.id());
         }
         return ResponseEntity.ok().build();
+    }
+
+    public static ResponseEntity<String> resultErrorHandler(BindingResult result) {
+        StringJoiner joiner = new StringJoiner("<br>");
+        result.getFieldErrors().forEach(
+                fe -> {
+                    String msg = fe.getDefaultMessage();
+                    if (msg != null) {
+                        if (!msg.startsWith(fe.getField())) {
+                            msg = fe.getField() + ' ' + msg;
+                        }
+                        joiner.add(msg);
+                    }
+                });
+        return ResponseEntity.unprocessableEntity().body(joiner.toString());
     }
 
     @Override
