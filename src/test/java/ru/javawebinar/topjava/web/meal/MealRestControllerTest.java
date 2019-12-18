@@ -116,7 +116,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void notValidCreate () throws Exception {
+    void notValidCreate() throws Exception {
         Meal newMeal = MealTestData.getNew();
         newMeal.setDescription("");
         perform(doPost().jsonBody(newMeal).basicAuth(USER))
@@ -125,10 +125,27 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void notValidUpdate () throws Exception {
+    void notValidUpdate() throws Exception {
         Meal updated = MealTestData.getUpdated();
         updated.setDateTime(null);
         perform(doPut(MEAL1_ID).jsonBody(updated).basicAuth(USER))
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    void notValidUpdate2() throws Exception {
+        Meal updated = MealTestData.getUpdated();
+        updated.setDescription("");
+        perform(doPut(MEAL1_ID).jsonBody(updated).basicAuth(USER))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+//    @Test
+//    void duplicateDateTime() throws Exception {
+//        Meal newMeal = MealTestData.getNew();
+//
+//        perform(doPost().jsonBody(newMeal).basicAuth(USER));
+//        perform(doPost().jsonBody(newMeal).basicAuth(USER))
+//                .andExpect(status().isUnprocessableEntity());
+//    }
 }

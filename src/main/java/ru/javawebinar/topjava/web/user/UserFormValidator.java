@@ -15,10 +15,6 @@ import java.util.stream.Collectors;
 @Component
 public class UserFormValidator implements Validator {
 
-//    @Autowired
-//    @Qualifier("emailValidator")
-//    EmailValidator emailValidator;
-
     @Autowired
     UserService userService;
 
@@ -30,11 +26,8 @@ public class UserFormValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         HasEmail user = (HasEmail)o;
-
-//        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");
-        List<String> emails = userService.getAll().stream().filter(e -> !e.getId().equals(user.getId())).map(User::getEmail).collect(Collectors.toList());
-
-        if (emails.contains(user.getEmail())) {
+        User fromDB = userService.getByEmail(user.getEmail().toLowerCase());
+        if (fromDB != null && !fromDB.getId().equals(user.getId())) {
             errors.rejectValue("email", "user.email.alreadyExist");
         }
     }

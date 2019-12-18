@@ -21,15 +21,6 @@ public abstract class AbstractUserController {
     @Autowired
     private UserService service;
 
-    @Autowired
-    UserFormValidator userFormValidator;
-
-    //Set a form validator
-    @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(userFormValidator);
-    }
-
     public List<User> getAll() {
         log.info("getAll");
         return service.getAll();
